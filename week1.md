@@ -9,7 +9,10 @@
     $ python --version
     $ pip --version
   ```
-- jupyter 설치, pip을 사용해 jupyter를 설치합니다. `jupyter notebook`으로 실행할 수 있으며 `.ipynb`와 같은 노트북 파일로 작업을 합니다. 더 자세한 내용은 [여기](http://jupyter.org/)를 참조하세요.
+- jupyter 설치, pip을 사용해 jupyter를 설치합니다. 
+  - `pip install jupyter`로 설치할 수 있습니다. 
+  - `jupyter notebook`으로 실행할 수 있으며 `.ipynb`와 같은 노트북 파일로 작업을 합니다. 더 
+  - 자세한 내용은 [여기](http://jupyter.org/)를 참조하세요.
 - 간단한 반복 구문과 리스트를 다루는 방법에 대해서 조금 배웠습니다.
 
 ### 숙제

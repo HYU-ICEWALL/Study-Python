@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<table class="table table-hover">
+  <tr class="active">
+    <td>#</td>
+    <td>Problem</td>
+    <td>Name</td>
+    <td>Size</td>
+    <td>Result</td>
+  </tr>
+  {% for result in results %}
+    <tr class={{ result.result }}>
+      <td>{{ result.id }}</td>
+      <td>{{ result.problem_name }}</td>
+      <td>{{ result.user_name }}</td>
+      <td>{{ result.size }}</td>
+      <td>{{ result.process == 1 and "O" or "X" }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+<!doctype html>
+<head>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+  <title>ICEWALL</title>
+
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand">ICEWALL</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li {% if now=="home"%}class="active"{% endif %}>
+            <a href="/">Home<span class="sr-only">(current)</span></a>
+          </li>
+          <li {% if now=="problem"%}class="active"{% endif %}>
+            <a href="/problems">Assignment</a>
+          </li>
+          <li {% if now=="submit"%}class="active"{% endif %}>
+            <a href="/submit">Submit</a>
+          </li>
+          <li {% if now=="result"%}class="active"{% endif %}>
+            <a href="/results">Result</a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            {% if not session.signin %}
+              <a id="login" href="/login">Login</a>
+            {% else %}
+              <a id="logout" href="/logout">Logout</a>a
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+
+  <div class="content">
+    {% block body %}
+    {% endblock %}
+  </div>
+
+</body>

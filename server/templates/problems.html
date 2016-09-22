@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+
+  <ul class="problems text-left">
+    {% for problem in problems %}
+      <li class="problem">
+        <h2>
+          <small>{{ problem.week }} 주차</small>
+          <a href={{"/problems/" + problem.id|string }}>
+            {{ problem.title }}
+          </a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

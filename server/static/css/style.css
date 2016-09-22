@@ -1,0 +1,54 @@
+html,body {
+  height: 100%;
+  margin: 0px;
+  padding: 0px; 
+}
+.flash {
+  margin: 0px auto;
+  background: #cee5F5;
+  padding: 0.5em;
+  border: 1px solid #aacbe2; 
+  float: center;
+  width: 600px;
+}
+.error {
+  background: #f0d6d6; 
+  padding: 0.5em; 
+}
+
+.navbar-right li a#login {
+  background-color: #e0e0f0;
+}
+.navbar-right li a#logout {
+  background-color: #f0e0e0;
+}
+
+.content {
+  margin: 0px auto;
+  background-color: #fafafa;
+  width: 600px;
+  height: 100%;
+  padding-top: 30px;
+}
+
+.title {
+  text-align: center;
+}
+
+.form-submit {
+  width: 400px;
+  margin: 0px auto;
+}
+
+.problems {
+  margin-left: 50px;
+}
+
+#select-problem {
+  float: right;
+  margin-right: 15px;
+}
+
+#btn-submit {
+  float: right;
+}

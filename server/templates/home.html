@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h1 class="title">Python Study 2016 @ ICEWALL</h1>
+
+  {% if error %}
+    <p class="error">
+      <strong>Error:</strong>
+    </p>
+    {{ error }}
+  {% endif %}
+
+{% endblock %}

@@ -193,7 +193,8 @@ def close_connection(exception):
 # for utility
 import datetime
 def get_timestamp():
-  return datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d-%H%M%S')
+  stamp = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d-%H%M%S')
+  return str(randrange(100, 1000)) + '-' + stamp 
 
 # main
 if __name__ == "__main__":

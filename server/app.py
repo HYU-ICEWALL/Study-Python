@@ -6,8 +6,6 @@ app = Flask(__name__)
 
 @app.route("/")
 def _home():
-  input_result()
-  get_results()
   return render_template('home.html', now="home")
 
 @app.route("/login")
@@ -68,7 +66,6 @@ def get_results():
     result_dic['problem_name'] = get_problem_name(result_dic['problem_id'])
     result_dic['result'] = result_dic['process'] == 1 and 'success' or 'danger'
     results.append(result_dic)
-  print (results)
   return results
 
 def make_submission(args):
@@ -167,4 +164,4 @@ def get_timestamp():
 # main
 if __name__ == "__main__":
   app.secret_key = 'ICEWALL@PYTHON2016#'
-  app.run(host='0.0.0.0', debug=True)
+  app.run(host='0.0.0.0', debug=False)

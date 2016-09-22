@@ -56,11 +56,7 @@ def _results():
 @app.route("/results/<int:result_id>")
 def _result(result_id):
   return render_template('result.html', now="result", id=result_id)
-
-# for test
-def input_result():
-  query_db('insert into submissions (user_name, file_name, problem_id, size, process, score) VALUES (\'%s\', \'%s\', %d, %d, %d, %d)' % ('maybe', 'test.py', 1,2,1,4), (), True)
-
+  
 # for results
 RESULT_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score']
 def get_results():

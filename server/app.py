@@ -2,6 +2,9 @@ import os
 import markdown
 from flask import Flask, render_template, Markup, request, flash, redirect, url_for
 
+PATH_SPLIT = '/'
+RESOURCES = 'resources'
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -39,6 +42,7 @@ def _submit():
       file_size = os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'] + nowstamp))
       problem_id = int(get_problem_id(problem))
       query_db('INSERT INTO submissions (user_name, file_name, problem_id, size, process, score, stamp) VALUES (\'%s\', \'%s\', %d, %d, %d, %d, \'%s\')' % (user_name, file_name, problem_id, file_size, 0, 0, nowstamp), (), True)
+      push_submission(get_submission(nowstamp))
       return redirect(url_for('_results'))
     else:
       if not user_name:
@@ -56,15 +60,17 @@ def _result(result_id):
   return render_template('result.html', now="result", id=result_id)
   
 # for results
-RESULT_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score']
+SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp']
+SUBMISSION_COLOR = ['warning', 'danger', 'success']
 def get_results():
+  fetch_process()
   results = []
   for result in query_db('select * from submissions order by id desc'):
     result_dic = {}
-    for (column, value) in zip(RESULT_COLUMN, result):
+    for (column, value) in zip(SUBMISSION_COLUMN, result):
       result_dic[column] = value
     result_dic['problem_name'] = get_problem_name(result_dic['problem_id'])
-    result_dic['result'] = result_dic['process'] == 1 and 'success' or 'danger'
+    result_dic['result'] = SUBMISSION_COLOR[result_dic['process']]
     results.append(result_dic)
   return results
 
@@ -73,7 +79,7 @@ def make_submission(args):
   return submission
 
 # for problems
-PROBLEM_FOLDER = 'resources/assignments/'
+PROBLEM_FOLDER = RESOURCES + PATH_SPLIT + 'assignments' + PATH_SPLIT
 PROBLEM_ARGS = ['id', 'week', 'title', 'flag']
 def get_problems(args=PROBLEM_ARGS):
   problems = []
@@ -103,20 +109,48 @@ def get_problem_id(name, target='title', find='id'):
       return problem[find]
   return -1
 
-# for file process
+# for submission
+from score import scoring
 from queue import Queue
-qu = Queue()
+from threading import Thread
+class validate(Thread):
+  def __init__(self, submit, result):
+    Thread.__init__(self)
+    self.submit = submit
+    self.result = result
 
-def append_file(file_id):
-  qu.put(file_id)
+  def run(self):
+    while True:
+      submission = self.submit.get()
+      validation = RESOURCES + PATH_SPLIT + 'inspections' + PATH_SPLIT + str(submission['problem_id'])
+      result = scoring(UPLOAD_FOLDER + submission['stamp'], validation)
+      self.submit.task_done()
+      self.result.put({'id': submission['id'], 'process': result and 2 or 1})
 
-def process_file():
-  id = qu.get()
+queue_submit = Queue()
+queue_result = Queue()
+def fetch_process():
+  while not queue_result.empty():
+    result = queue_result.get()
+    query_db('UPDATE submissions SET process=%d WHERE id=%d' % (result['process'], result['id']), (), True)
+
+def push_submission(submission):
+  queue_submit.put(submission)
+  for _ in range(3):
+    thread = validate(queue_submit, queue_result)
+    thread.start()
+
+def get_submission(filename):
+  result_dic = {}
+  results = query_db('SELECT * FROM submissions WHERE stamp = \'%s\'' % (filename), (), False, True)
+  for (column, result) in zip(SUBMISSION_COLUMN, results):
+    result_dic[column] = result
+  return result_dic
 
 # for file upload
 from werkzeug import secure_filename
 ALLOWED_EXTENSIONS = set(['py'])
-UPLOAD_FOLDER = 'resources/upload/'
+UPLOAD_FOLDER = RESOURCES + PATH_SPLIT + 'upload' + PATH_SPLIT
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -164,4 +198,4 @@ def get_timestamp():
 # main
 if __name__ == "__main__":
   app.secret_key = 'ICEWALL@PYTHON2016#'
-  app.run(host='0.0.0.0', debug=False)
+  app.run(host='0.0.0.0', debug=True)

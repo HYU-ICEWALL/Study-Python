@@ -1,0 +1,16 @@
+
+# coding: utf-8
+
+# In[20]:
+
+for y in range(2,10001):
+    if y == 2 :
+        print y
+    else :
+        for p in range(2,y):
+            if y % p == 0 :
+                break
+            elif p == y - 1 :
+                print y
+                break
+

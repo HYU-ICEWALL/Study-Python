@@ -2,7 +2,7 @@ import os
 import markdown
 from flask import Flask, render_template, Markup, request, flash, redirect, url_for
 
-PATH_SPLIT = '/'
+PATH_SPLIT = '\\'
 RESOURCES = 'resources'
 
 app = Flask(__name__)
@@ -98,7 +98,7 @@ def get_problem_name(id):
   return get_problem(id).split('.')[2]
 
 def get_problem_content(id):
-  problem = open(PROBLEM_FOLDER + get_problem(id), 'r')
+  problem = open(PROBLEM_FOLDER + get_problem(id), 'r', encoding="utf-8")
   content = problem.read()
   problem.close()
   return content
@@ -192,6 +192,7 @@ def close_connection(exception):
 
 # for utility
 import datetime
+from random import randrange
 def get_timestamp():
   stamp = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d-%H%M%S')
   return str(randrange(100, 1000)) + '-' + stamp 
@@ -199,4 +200,4 @@ def get_timestamp():
 # main
 if __name__ == "__main__":
   app.secret_key = 'ICEWALL@PYTHON2016#'
-  app.run(host='0.0.0.0', debug=True)
+  app.run(host='0.0.0.0', debug=False)

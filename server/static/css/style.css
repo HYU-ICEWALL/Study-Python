@@ -31,7 +31,10 @@ html,body {
   padding-top: 30px;
 }
 
-.title {
+.home-content{
+  margin-left: 80px;
+}
+.home-title {
   text-align: center;
 }
 

@@ -1,6 +1,22 @@
 {% extends "layout.html" %}
 {% block body %}
-  <h1 class="title">Python Study 2016 @ ICEWALL</h1>
+
+  <h1 class="home-title">Python Study 2016 @ ICEWALL</h1>
+
+  <div class="home-content">
+    <h2> Lecture in <a href="https://maybes.gitbooks.io/python-2016/content/week0.html">Gitbook</a></h2>
+
+    <h3> ! Attention </h3>
+    <h4> submit code must be python3 </h4>
+    <ul>
+      <li>
+        <h5> python3 not support <strong>xrange()</strong>. use range() </h5>
+      </li>
+      <li>
+        <h5> python3 input() return type is <strong>str</strong> not int. use int(input())</h5>
+      </li>
+    </ul>
+  </div>
 
   {% if error %}
     <p class="error">

@@ -1,4 +1,3 @@
 .DS_Store
-.db
+app.db
 resources/upload/
-

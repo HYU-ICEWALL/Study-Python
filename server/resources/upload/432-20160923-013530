@@ -1,8 +1,0 @@
-for i in range(100):
-	a=int(input())
-	for j in range(2,a):
-		if a%j==0:
-			print('0')
-			break
-	else:
-		print('1')

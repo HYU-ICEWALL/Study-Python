@@ -35,7 +35,7 @@ def _submit():
     file = request.files['file']
     user_name = request.form['name']
     problem = request.form['problem']
-    if file and user_name and problem and allowed_file(file.filename):
+    if file and user_name.strip() and problem and allowed_file(file.filename):
       nowstamp = get_timestamp()
       file_name = secure_filename(file. filename)
       file.save(os.path.join(app.config['UPLOAD_FOLDER'], nowstamp))
@@ -45,7 +45,7 @@ def _submit():
       push_submission(get_submission(nowstamp))
       return redirect(url_for('_results'))
     else:
-      if not user_name:
+      if not user_name.strip():
         flash('input name must')
       else:
         flash('file upload error')

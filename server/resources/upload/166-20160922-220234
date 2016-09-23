@@ -1,0 +1,14 @@
+n = int(input())
+for i in range(n):
+	data = input().split()
+	data_set[data[0]] = int(data[1])
+
+m = int(input())
+for i in range(m):
+	data = input().split()
+	if data[0] == "a":
+		data_set[data[1]] += int(data[2])
+	elif data[0] == "m":
+		data_set[data[1]] -= int(data[2])
+	else:
+		print(data_set[data[1]])

@@ -1,0 +1,14 @@
+
+
+def isP(num) :
+	div = 0;
+	for i in range(1,num+1):
+		if(num%i == 0):
+			div += 1;
+	return(div == 2)
+
+
+
+for i in range(1,10001) :
+	if(isP(i) == True):
+		print(i)

@@ -8,6 +8,6 @@ create table submissions (
   size integer default 0,
   process integer default 0,
   score integer default 0,
-  open integer default 0,
-  stamp string not null
+  stamp string not null,
+  open integer default 0
 );

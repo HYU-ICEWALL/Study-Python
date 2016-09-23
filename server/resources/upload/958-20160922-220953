@@ -1,7 +1,0 @@
-from a import b
-
-
-a = 0
-for i in tqdm(range(10000000)):
-	a += i
-print a

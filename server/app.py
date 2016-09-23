@@ -59,7 +59,8 @@ def _results():
   page = page and int(page) or 1
   if not page or page < 1: page = 1
   pages = [str(each + 1) for each in range(int(int(get_results_cnt()) / RESULT_PER_PAGE + 1))]
-  return render_template('results.html', now="result", results=get_results(page * RESULT_PER_PAGE)[-RESULT_PER_PAGE:], pages=pages, page=str(page))
+  results = get_results(page * RESULT_PER_PAGE)[-RESULT_PER_PAGE:]
+  return render_template('results.html', now="result", results=results, pages=pages, page=str(page))
 
 @app.route("/results/<int:result_id>")
 def _result(result_id):

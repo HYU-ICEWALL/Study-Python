@@ -36,4 +36,4 @@ def get_timestamp():
 
 # main
 if __name__ == "__main__":
-  print (scoring("test.py", "resources\\inspections\\0"))
+  print (scoring("test.py", "resources/inspections/0"))

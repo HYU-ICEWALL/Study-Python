@@ -1,0 +1,15 @@
+D = {}
+
+for i in range(int(input())) :
+	T = input().split()
+	D[T[0]] = T[1]
+	
+for i in range(int(input())) :
+	T = input().split()
+	if(T[0] == 'a') :
+		D[T[1]] = int(D[T[1]]) + int(T[2])
+	elif(T[0] == 'm') :
+		D[T[1]] = int(D[T[1]]) - int(T[2])
+	elif(T[0] == 's') :
+		print (D[T[1]])
+

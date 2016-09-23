@@ -1,0 +1,30 @@
+
+# coding: utf-8
+
+# In[1]:
+
+x = input()
+ary = []
+box = []
+x = int(x)
+for j in range(x):
+    y = input()
+    box = [y[:-2] ,int(y[-1])]
+    ary.append(box)
+z = input()
+z = int(z)
+for j in range(z):
+    g = input()
+    if g[:1] == 'a' :
+        for num in ary :
+            if g[2:-2] == num[0] :
+                num[1] += int(g[-1])
+    elif g[:1] == 'm' :
+        for num in ary :
+            if g[2:-2] == num[0] :
+                num[1]-=int(g[-1])
+    elif g[:1] == 's':
+        for num in ary :
+            if g[2:] == num[0] :
+                print (num[1])
+

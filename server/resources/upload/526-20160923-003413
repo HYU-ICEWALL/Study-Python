@@ -1,0 +1,20 @@
+
+FD = {}
+
+NOF = input();
+
+for i in range(int(NOF)) :
+	TA = input().split()
+	FD[TA[0]] = TA[1]
+
+NOC = input();
+
+for i in range(int(NOC)) :
+	TA = input().split()
+	if(TA[0] == 'a') :
+		FD[TA[1]] = int(FD[TA[1]]) + int(TA[2])
+	elif(TA[0] == 'm') :
+		FD[TA[1]] = int(FD[TA[1]]) - int(TA[2])
+	elif(TA[0] == 's') :
+		print (FD[TA[1]])
+

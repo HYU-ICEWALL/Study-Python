@@ -1,0 +1,16 @@
+dic = {}
+lol = input()
+for i in xrange(lol):
+    s = raw_input()
+    q = s.split()
+    dic[q[0]] = int(q[1])
+lol = input()
+for i in xrange(lol):
+    s = raw_input()
+    q = s.split()
+    if(q[0] == "a"):
+        dic[q[1]] += int(q[2])
+    elif(q[0] == "m"):
+        dic[q[1]] -= int(q[2])
+    elif(q[0] == "s"):
+        print(dic[q[1]])

@@ -1,0 +1,12 @@
+cnt=0
+while(cnt<100):
+    b=0
+    a=int(input())    
+    for i in range(2,a):
+        if (a%i==0):
+            b=b+1
+    if (b==0):
+        print ("1")
+    else:
+        print ("0")
+    cnt=cnt+1

@@ -1,0 +1,16 @@
+
+
+def isDivisor(num) :
+	i=0;
+	divisor = 0;
+	for i in xrange(1,num+1):
+		if(num%i == 0):
+			divisor += 1;
+
+	return(divisor == 2)
+
+
+
+for i in xrange(1,10001) :
+	if(isDivisor(i) == True):
+		print(i)

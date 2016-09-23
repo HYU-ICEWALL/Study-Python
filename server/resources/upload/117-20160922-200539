@@ -1,0 +1,23 @@
+
+# coding: utf-8
+
+# In[ ]:
+
+for p in range(1,101):
+    x = input()
+    if x == 2 :
+        print ('1')
+    else :
+        for j in range(2, x) :
+            if x % j == 0:
+                print ('0')
+                break
+            elif j == x - 1 :
+                print ('1')
+                break 
+
+
+# In[ ]:
+
+
+

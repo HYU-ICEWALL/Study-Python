@@ -1,3 +1,4 @@
 .DS_Store
 app.db
-resources/upload/*
+upload/*
+__pycache__/*

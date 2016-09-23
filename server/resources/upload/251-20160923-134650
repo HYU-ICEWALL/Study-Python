@@ -36,13 +36,14 @@ def _submit():
     user_name = request.form['name']
     problem = request.form['problem']
     opensource = request.form.getlist('opensource')[0] == 'open'
+    print (opensource)
     if file and user_name.strip() and problem and allowed_file(file.filename):
       nowstamp = get_timestamp()
       file_name = secure_filename(file. filename)
       file.save(os.path.join(app.config['UPLOAD_FOLDER'], nowstamp))
       file_size = os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'] + nowstamp))
       problem_id = int(get_problem_id(problem))
-      query_db('INSERT INTO submissions (user_name, file_name, problem_id, size, process, score, stamp, open) VALUES (\'%s\', \'%s\', %d, %d, %d, %d, \'%s\', %d)' % (user_name, file_name, problem_id, file_size, 0, 0, nowstamp, opensource and 1 or 0 ), (), True)
+      query_db('INSERT INTO submissions (user_name, file_name, problem_id, size, process, score, stamp) VALUES (\'%s\', \'%s\', %d, %d, %d, %d, \'%s\')' % (user_name, file_name, problem_id, file_size, 0, 0, nowstamp), (), True)
       push_submission(get_submission(nowstamp))
       return redirect(url_for('_results'))
     else:
@@ -56,7 +57,8 @@ RESULT_PER_PAGE = 15
 @app.route("/results")
 def _results():
   page = request.args.get('page')
-  page = page and int(page) or 1
+  if not page: page = 1
+  page = int(page)
   if not page or page < 1: page = 1
   pages = [str(each + 1) for each in range(int(int(get_results_cnt()) / RESULT_PER_PAGE + 1))]
   return render_template('results.html', now="result", results=get_results(page * RESULT_PER_PAGE)[-RESULT_PER_PAGE:], pages=pages, page=str(page))
@@ -64,20 +66,27 @@ def _results():
 @app.route("/results/<int:result_id>")
 def _result(result_id):
   result = get_result(result_id)
-  if result['open']:
-    content = get_result_content(result_id)
-    result['content'] = content
-    result['problem_ref'] = "/problems/" + str(result['problem_id'])
-    return render_template('result.html', now="result", id=result_id, result=result)
-  return redirect(url_for('_results'))
-    
+  content = get_result_content(result_id)
+  result['content'] = content
+  result['problem_ref'] = "/problems/" + str(result['problem_id'])
+  return render_template('result.html', now="result", id=result_id, result=result)
+  
 # for results
-SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp', 'open']
+SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp']
 SUBMISSION_COLOR = ['warning', 'danger', 'success']
 SUBMISSION_MARK = ['...', 'X', 'O']
 def get_results(n=0):
   fetch_process()
-  results = [get_result(result) for result in query_db('SELECT id FROM submissions ORDER BY id DESC LIMIT %d' % n)]
+  results = []
+  for result in query_db('SELECT * FROM submissions ORDER BY id DESC LIMIT %d' % n):
+    result_dic = {}
+    for (column, value) in zip(SUBMISSION_COLUMN, result):
+      result_dic[column] = value
+    result_dic['problem_name'] = get_problem_name(result_dic['problem_id'])
+    result_dic['result'] = SUBMISSION_COLOR[result_dic['process']]
+    result_dic['process'] = SUBMISSION_MARK[result_dic['process']]
+    result_dic['href'] = '/results/' + str(result_dic['id'])
+    results.append(result_dic)
   return results
 
 def get_result(id):
@@ -85,17 +94,10 @@ def get_result(id):
   result = query_db('SELECT * FROM submissions WHERE id=%d' % (id), (), False, True)
   for (column, value) in zip(SUBMISSION_COLUMN, result):
     result_dic[column] = value
-  result_dic = pre_result(result_dic)
-  return result_dic
-
-def pre_result(result_dic):
   result_dic['problem_name'] = get_problem_name(result_dic['problem_id'])
   result_dic['result'] = SUBMISSION_COLOR[result_dic['process']]
   result_dic['process'] = SUBMISSION_MARK[result_dic['process']]
-  result_dic['open'] = result_dic['open'] == 1
-  result_dic['href'] = '/results/' + str(result_dic['id'])
   return result_dic
-
 
 def get_result_content(id):
   stamp = query_db('SELECT stamp FROM submissions WHERE id=%d' % (id), (), False, True)[0]

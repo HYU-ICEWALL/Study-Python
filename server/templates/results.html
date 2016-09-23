@@ -1,6 +1,11 @@
+
 {% extends "layout.html" %}
 {% block body %}
-
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
 <table class="table table-hover">
   <tr class="active">
     <td>#</td>
@@ -14,10 +19,27 @@
       <td>{{ result.id }}</td>
       <td>{{ result.problem_name }}</td>
       <td>{{ result.user_name }}</td>
-      <td>{{ result.size }}</td>
-      <td>{{ result.process == 0 and "..." or result.process == 1 and "X" or "O" }}</td>
+      <td>{% if result.open %}<a href={{ result.href }}>{% endif %}
+        {{ result.size }}
+        {% if result.open %}</a>{% endif %}
+      </td>
+      <td data-toggle="tooltip" data-placement="bottom" title={{ result.stamp.split('-')[1][-4:] }}>{{ result.process }}</td>
     </tr>
   {% endfor %}
 </table>
+
+<div class="pages">
+  <tr>
+    {% for p in pages %}
+      <td>
+        <a href={{ '/results?page=' + p }}>
+        {% if p == page %} <strong> {% endif %}
+          {{ p }} 
+        {% if p == page %} </strong> {% endif %}
+        </a>
+      </td>
+    {% endfor %}
+  </tr>
+</div>
 
 {% endblock %}

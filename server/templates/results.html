@@ -18,7 +18,9 @@ $(function () {
     <tr class={{ result.result }}>
       <td>{{ result.id }}</td>
       <td>{{ result.problem_name }}</td>
-      <td>{{ result.user_name }}</td>
+      <td><a href={{ url_for('_results', name=result.user_name) }}>
+        {{ result.user_name }}
+      </a></td>
       <td>{% if result.open %}<a href={{ result.href }}>{% endif %}
         {{ result.size }}
         {% if result.open %}</a>{% endif %}
@@ -32,7 +34,7 @@ $(function () {
   <tr>
     {% for p in pages %}
       <td>
-        <a href={{ '/results?page=' + p }}>
+        <a href={{ url_for('_results', page=p, name=name) }}>
         {% if p == page %} <strong> {% endif %}
           {{ p }} 
         {% if p == page %} </strong> {% endif %}

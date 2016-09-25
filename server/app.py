@@ -58,9 +58,10 @@ def _results():
   page = request.args.get('page')
   page = page and int(page) or 1
   if not page or page < 1: page = 1
-  pages = [str(each + 1) for each in range(int(int(get_results_cnt()) / RESULT_PER_PAGE + 1))]
-  results = get_results(page * RESULT_PER_PAGE)[-RESULT_PER_PAGE:]
-  return render_template('results.html', now="result", results=results, pages=pages, page=str(page))
+  name = request.args.get('name')
+  pages = [str(each + 1) for each in range(int((int(get_results_cnt(name)) - 1) / RESULT_PER_PAGE + 1))]
+  results = get_results(page * RESULT_PER_PAGE, name)[-RESULT_PER_PAGE:]
+  return render_template('results.html', now="result", name=name, results=results, pages=pages, page=str(page))
 
 @app.route("/results/<int:result_id>")
 def _result(result_id):
@@ -76,9 +77,13 @@ def _result(result_id):
 SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp', 'open']
 SUBMISSION_COLOR = ['warning', 'danger', 'success']
 SUBMISSION_MARK = ['...', 'X', 'O']
-def get_results(n=0):
+def get_results(n=0, name=None):
   fetch_process()
-  results = [get_result(result) for result in query_db('SELECT id FROM submissions ORDER BY id DESC LIMIT %d' % n)]
+  query = 'SELECT id FROM submissions'
+  if name:
+    query += ' WHERE user_name = \'%s\'' % name
+  query += ' ORDER BY id DESC LIMIT %d' % n
+  results = [get_result(result) for result in query_db(query)]
   return results
 
 def get_result(id):
@@ -95,6 +100,7 @@ def pre_result(result_dic):
   result_dic['process'] = SUBMISSION_MARK[result_dic['process']]
   result_dic['open'] = result_dic['open'] == 1
   result_dic['href'] = '/results/' + str(result_dic['id'])
+  result_dic['name_search'] = '/results?name=' + str(result_dic['user_name'])
   return result_dic
 
 
@@ -105,8 +111,11 @@ def get_result_content(id):
   file.close()
   return result
 
-def get_results_cnt():
-  cnt = query_db('SELECT COUNT(*) FROM submissions', (), False, True)[0]
+def get_results_cnt(name=None):
+  query = 'SELECT COUNT(*) FROM submissions'
+  if name:
+    query += ' WHERE user_name = \'%s\'' % name
+  cnt = query_db(query, (), False, True)[0]
   return cnt
 
 def make_submission(args):
@@ -157,7 +166,7 @@ class validate(Thread):
     while True:
       submission = self.submit.get()
       validation = get_path(PATH['INS'] + [str(submission['problem_id'])])
-      result = scoring(get_path(PATH['UPL'] + submission['stamp']), validation)
+      result = scoring(get_path(PATH['UPL'] + [submission['stamp']]), validation)
       self.submit.task_done()
       self.result.put({'id': submission['id'], 'process': result and 2 or 1})
 

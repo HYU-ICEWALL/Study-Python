@@ -4,7 +4,8 @@ PATH = {
   "INS": ['resources', 'inspections'],
   "UPL": ['resources', 'upload'],
   "VAL": ['resources', 'validation'],
-  "ASS": ['resources', 'assignments']
+  "ASS": ['resources', 'assignments'],
+  "TES": ['resources', 'test']
 }
 
 def get_path(path, end=False):
@@ -14,7 +15,7 @@ def get_path(path, end=False):
 
 from shutil import copyfile
 def pretreatment(filename):
-  timestamp = RESOURCES + PATH_SPLIT + "test" + PATH_SPLIT + get_timestamp()
+  timestamp = get_path(PATH['TES'] + [get_timestamp()])
   copyfile(filename, timestamp)
   return timestamp
 

@@ -1,7 +1,20 @@
-from shutil import copyfile
+PATH_SPLIT = '\\'
+PATH = {
+  "RES": ['resources'],
+  "INS": ['resources', 'inspections'],
+  "UPL": ['resources', 'upload'],
+  "VAL": ['resources', 'validation'],
+  "ASS": ['resources', 'assignments']
+}
 
+def get_path(path, end=False):
+  path = PATH_SPLIT.join(path)
+  if end: path += PATH_SPLIT
+  return path
+
+from shutil import copyfile
 def pretreatment(filename):
-  timestamp = get_timestamp()
+  timestamp = RESOURCES + PATH_SPLIT + "test" + PATH_SPLIT + get_timestamp()
   copyfile(filename, timestamp)
   return timestamp
 
@@ -21,11 +34,12 @@ def process(filename, input):
   call(['python3', filename], stdin=open(input), stdout=open(output, 'w'))
   return output
 
-def scoring(program, validate):
+def scoring(program, validate, debug=False):
   py = pretreatment(program)
   out = process(py, validate + '.in')
   ret = isRight(out, validate + '.out')
-  aftertreatment(py)
+  if not debug:
+    aftertreatment(py)
   return ret
 
 from random import randrange

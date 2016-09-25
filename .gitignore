@@ -1,4 +1,5 @@
 .DS_Store
-app.db
-upload/*
-__pycache__/*
+upload/
+__pycache__/
+test/
+*.db

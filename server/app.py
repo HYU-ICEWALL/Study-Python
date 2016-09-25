@@ -2,7 +2,7 @@ import os
 import markdown
 from flask import Flask, render_template, Markup, request, flash, redirect, url_for
 
-PATH_SPLIT = '/'
+PATH_SPLIT = '\\'
 RESOURCES = 'resources'
 
 app = Flask(__name__)
@@ -35,7 +35,7 @@ def _submit():
     file = request.files['file']
     user_name = request.form['name']
     problem = request.form['problem']
-    opensource = request.form.getlist('opensource')[0] == 'open'
+    opensource = request.form.getlist('opensource') and True or False 
     if file and user_name.strip() and problem and allowed_file(file.filename):
       nowstamp = get_timestamp()
       file_name = secure_filename(file. filename)
@@ -100,7 +100,7 @@ def pre_result(result_dic):
 
 def get_result_content(id):
   stamp = query_db('SELECT stamp FROM submissions WHERE id=%d' % (id), (), False, True)[0]
-  file = open(UPLOAD_FOLDER + PATH_SPLIT + stamp, 'r')
+  file = open(get_path(PATH['UPL'] + [stamp]), 'r')
   result = file.read()
   file.close()
   return result
@@ -114,11 +114,10 @@ def make_submission(args):
   return submission
 
 # for problems
-PROBLEM_FOLDER = RESOURCES + PATH_SPLIT + 'assignments' + PATH_SPLIT
 PROBLEM_ARGS = ['id', 'week', 'title', 'flag']
 def get_problems(args=PROBLEM_ARGS):
   problems = []
-  for each in os.listdir(PROBLEM_FOLDER):
+  for each in os.listdir(get_path(PATH['ASS'], True)):
     problem = {}
     for (arg, value) in zip(PROBLEM_ARGS, each.split('.')):
       if arg in args:
@@ -127,13 +126,13 @@ def get_problems(args=PROBLEM_ARGS):
   return problems
 
 def get_problem(id):
-  return os.listdir(PROBLEM_FOLDER)[id]
+  return os.listdir(get_path(PATH['ASS'], True))[id]
 
 def get_problem_name(id):
   return get_problem(id).split('.')[2]
 
 def get_problem_content(id):
-  problem = open(PROBLEM_FOLDER + get_problem(id), 'r', encoding="utf-8")
+  problem = open(get_path(PATH['ASS'] + [get_problem(id)]), 'r', encoding="utf-8")
   content = problem.read()
   problem.close()
   return content
@@ -145,7 +144,7 @@ def get_problem_id(name, target='title', find='id'):
   return -1
 
 # for submission
-from score import scoring
+from utility import scoring, get_path, PATH
 from queue import Queue
 from threading import Thread
 class validate(Thread):
@@ -157,8 +156,8 @@ class validate(Thread):
   def run(self):
     while True:
       submission = self.submit.get()
-      validation = RESOURCES + PATH_SPLIT + 'inspections' + PATH_SPLIT + str(submission['problem_id'])
-      result = scoring(UPLOAD_FOLDER + submission['stamp'], validation)
+      validation = get_path(PATH['INS'] + [str(submission['problem_id'])])
+      result = scoring(get_path(PATH['UPL'] + submission['stamp']), validation)
       self.submit.task_done()
       self.result.put({'id': submission['id'], 'process': result and 2 or 1})
 
@@ -185,8 +184,7 @@ def get_submission(filename):
 # for file upload
 from werkzeug import secure_filename
 ALLOWED_EXTENSIONS = set(['py'])
-UPLOAD_FOLDER = RESOURCES + PATH_SPLIT + 'upload' + PATH_SPLIT
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = get_path(PATH['UPL'], True)
 
 def allowed_file(filename):
   return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -235,4 +233,4 @@ def get_timestamp():
 # main
 if __name__ == "__main__":
   app.secret_key = 'ICEWALL@PYTHON2016#'
-  app.run(host='0.0.0.0', debug=True)
+  app.run(host='0.0.0.0', debug=False)

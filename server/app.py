@@ -100,6 +100,7 @@ def pre_result(result_dic):
   result_dic['process'] = SUBMISSION_MARK[result_dic['process']]
   result_dic['open'] = result_dic['open'] == 1
   result_dic['href'] = '/results/' + str(result_dic['id'])
+  if result_dic['result'] == "None": result_dic['result'] = "Wrong Answer"
   result_dic['name_search'] = '/results?name=' + str(result_dic['user_name'])
   return result_dic
 

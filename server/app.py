@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def _home():
+  patch()
   return render_template('home.html', now="home")
 
 @app.route("/login")
@@ -66,7 +67,7 @@ def _results():
 @app.route("/results/<int:result_id>")
 def _result(result_id):
   result = get_result(result_id)
-  if result['open']:
+  if result['open'] or (result['process'] == "E" or result['process'] == "X"):
     content = get_result_content(result_id)
     result['content'] = content
     result['problem_ref'] = "/problems/" + str(result['problem_id'])
@@ -74,9 +75,9 @@ def _result(result_id):
   return redirect(url_for('_results'))
     
 # for results
-SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp', 'open']
-SUBMISSION_COLOR = ['warning', 'danger', 'success']
-SUBMISSION_MARK = ['...', 'X', 'O']
+SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp', 'open', 'result']
+SUBMISSION_COLOR = ['warning', 'danger', 'danger', 'success']
+SUBMISSION_MARK = ['...', 'E', 'X', 'O']
 def get_results(n=0, name=None):
   fetch_process()
   query = 'SELECT id FROM submissions'
@@ -96,7 +97,7 @@ def get_result(id):
 
 def pre_result(result_dic):
   result_dic['problem_name'] = get_problem_name(result_dic['problem_id'])
-  result_dic['result'] = SUBMISSION_COLOR[result_dic['process']]
+  result_dic['result_class'] = SUBMISSION_COLOR[result_dic['process']]
   result_dic['process'] = SUBMISSION_MARK[result_dic['process']]
   result_dic['open'] = result_dic['open'] == 1
   result_dic['href'] = '/results/' + str(result_dic['id'])
@@ -166,22 +167,24 @@ class validate(Thread):
     while True:
       submission = self.submit.get()
       validation = get_path(PATH['INS'] + [str(submission['problem_id'])])
-      result = scoring(get_path(PATH['UPL'] + [submission['stamp']]), validation)
+      (ret, res)  = scoring(get_path(PATH['UPL'] + [submission['stamp']]), validation)
       self.submit.task_done()
-      self.result.put({'id': submission['id'], 'process': result and 2 or 1})
+      self.result.put({'id': submission['id'], 'process': ret and 2 or 1, 'result': res})
 
 queue_submit = Queue()
 queue_result = Queue()
 def fetch_process():
   while not queue_result.empty():
     result = queue_result.get()
-    query_db('UPDATE submissions SET process=%d WHERE id=%d' % (result['process'], result['id']), (), True)
+    query = 'UPDATE submissions SET process=%d WHERE id=%d' % (result['process'], result['id'])
+    query_db(query, (), True)
+    query = 'UPDATE submissions SET result=\'%s\' WHERE id=%d' % (result['result'], result['id'])
+    query_db(query, (), True)
 
 def push_submission(submission):
   queue_submit.put(submission)
-  for _ in range(3):
-    thread = validate(queue_submit, queue_result)
-    thread.start()
+  thread = validate(queue_submit, queue_result)
+  thread.start()
 
 def get_submission(filename):
   result_dic = {}
@@ -231,6 +234,18 @@ def close_connection(exception):
   top = _app_ctx_stack.top
   if hasattr(top, 'sqlite_db'):
     top.sqlite_db.close()
+
+def patch():
+  l = query_db('SELECT id FROM submissions WHERE process=3')
+  for e in l:  
+    submission = {}
+    results = query_db('SELECT * FROM submissions WHERE id = %d' % (e[0]), (), False, True)
+    for (column, result) in zip(SUBMISSION_COLUMN, results):
+      submission[column] = result
+    validation = get_path(PATH['INS'] + [str(submission['problem_id'])])
+    (ret, res)  = scoring(get_path(PATH['UPL'] + [submission['stamp']]), validation)
+    queue_result.put({'id': submission['id'], 'process': res=="None" and 2 or 1, 'result': res})
+  fetch_process()
 
 # for utility
 import datetime

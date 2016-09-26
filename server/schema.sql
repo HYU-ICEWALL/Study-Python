@@ -9,5 +9,6 @@ create table submissions (
   process integer default 0,
   score integer default 0,
   stamp string not null,
-  open integer default 0
+  open integer default 0,
+  result string
 );

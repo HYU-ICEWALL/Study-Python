@@ -29,19 +29,27 @@ from filecmp import cmp
 def isRight(obj, tar):
   return cmp(obj, tar)
 
-from subprocess import call
+COMPILER = {'PY3': 'python3', 'PY2': 'python'}
+from subprocess import Popen, STDOUT
 def process(filename, input):
   output = filename + ".out"
-  call(['python3', filename], stdin=open(input), stdout=open(output, 'w'))
-  return output
+  command = [COMPILER['PY3'], filename]
+  proc = Popen(command, shell=True, stdin=open(input), stdout=open(output ,'w'), stderr=STDOUT)
+  proc.communicate()[0]
+  exit = proc.returncode
+  return (exit == 0, output)
 
-def scoring(program, validate, debug=False):
+def scoring(program, validate, debug=True):
   py = pretreatment(program)
-  out = process(py, validate + '.in')
-  ret = isRight(out, validate + '.out')
+  (res, out) = process(py, validate + '.in')
+  res = res and (isRight(out, validate + '.out') and 3 or 2) or 1 
+  if res == 1:
+    with open(out, 'r') as fh:
+      for line in fh:
+        ret = str(line).replace('\'', '`')
   if not debug:
     aftertreatment(py)
-  return ret
+  return (res, res == 1 and ret or "None")
 
 from random import randrange
 import datetime

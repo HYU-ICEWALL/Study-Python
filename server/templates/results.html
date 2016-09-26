@@ -15,7 +15,7 @@ $(function () {
     <td>Result</td>
   </tr>
   {% for result in results %}
-    <tr class={{ result.result }}>
+    <tr class={{ result.result_class }}>
       <td>{{ result.id }}</td>
       <td>{{ result.problem_name }}</td>
       <td><a href={{ url_for('_results', name=result.user_name) }}>
@@ -25,7 +25,11 @@ $(function () {
         {{ result.size }}
         {% if result.open %}</a>{% endif %}
       </td>
-      <td data-toggle="tooltip" data-placement="bottom" title={{ result.stamp.split('-')[1][-4:] }}>{{ result.process }}</td>
+      <td data-toggle="tooltip" data-placement="bottom" title={{ result.stamp.split('-')[1][-4:] }}>
+      {% if result.process == "E" or result.process == "X" %}<a href={{ result.href }}>{% endif %}
+        {{ result.process }}
+      {% if result.process == "E" or result.process == "X" %}</a>{% endif %}
+      </td>
     </tr>
   {% endfor %}
 </table>

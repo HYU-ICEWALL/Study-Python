@@ -8,7 +8,7 @@
       <td>Size</td>
       <td>Result</td>
     </tr>
-    <tr class={{ result.result }}>
+    <tr class={{ result.result_class }}>
       <td>{{ result.id }}</td>
       <td>{{ result.problem_name }}</td>
       <td>{{ result.user_name }}</td>
@@ -16,5 +16,13 @@
       <td data-toggle="tooltip" data-placement="bottom" title={{ result.stamp.split('-')[1][-4:] }}>{{ result.process }}</td>
     </tr>
   </table>
-  <textarea class="form-control" rows="30">{{ result.content }}</textarea>
+  {% if result.open %}
+    <textarea class="form-control" rows="30">{{ result.content }}</textarea>
+  {% endif %}
+  {% if result.process == "E" or result.process == "X" %}
+    <div class="err">
+      <h2>Err: </h2>
+      <h4>{{ result.result }}</h4>
+    </div>
+  {% endif %}
 {% endblock %}

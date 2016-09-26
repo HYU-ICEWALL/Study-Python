@@ -9,7 +9,6 @@ app = Flask(__name__)
 
 @app.route("/")
 def _home():
-  patch()
   return render_template('home.html', now="home")
 
 @app.route("/login")
@@ -236,7 +235,7 @@ def close_connection(exception):
     top.sqlite_db.close()
 
 def patch():
-  l = query_db('SELECT id FROM submissions WHERE process=3')
+  l = query_db('SELECT id FROM submissions WHERE process=1')
   for e in l:  
     submission = {}
     results = query_db('SELECT * FROM submissions WHERE id = %d' % (e[0]), (), False, True)

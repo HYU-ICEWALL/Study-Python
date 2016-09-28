@@ -169,7 +169,7 @@ class validate(Thread):
       validation = get_path(PATH['INS'] + [str(submission['problem_id'])])
       (ret, res)  = scoring(get_path(PATH['UPL'] + [submission['stamp']]), validation)
       self.submit.task_done()
-      self.result.put({'id': submission['id'], 'process': ret and 2 or 1, 'result': res})
+      self.result.put({'id': submission['id'], 'process': ret, 'result': res})
 
 queue_submit = Queue()
 queue_result = Queue()

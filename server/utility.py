@@ -47,7 +47,6 @@ def scoring(program, validate, debug=True):
     with open(out, 'r') as fh:
       for line in fh:
         ret = str(line).replace('\'', '`')
-        print(py)
         ret = ret.replace(py, 'uploaded code')
   if not debug:
     aftertreatment(py)

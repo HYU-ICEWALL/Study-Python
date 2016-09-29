@@ -35,17 +35,18 @@ def isRight(obj, tar):
   return cmp(obj, tar)
 
 COMPILER = {'PY3': 'python3', 'PY2': 'python'}
+VERSIONS = ['PY3', 'PY2']
 from subprocess import Popen, STDOUT
-def process(stamp):
-  command = [COMPILER['PY3'], stamp + '.py']
+def process(stamp, version):
+  command = [COMPILER[version], stamp + '.py']
   proc = Popen(command, shell=True, stdin=open(stamp + '.in'), stdout=open(stamp + '.out' ,'w'), stderr=STDOUT)
   proc.communicate()[0]
   return proc.returncode == 0
 
-def scoring(program, pid, debug=False):
+def scoring(program, pid, version='PY3', debug=False):
   stamp = pretreatment(program)
   generate_validation(pid, stamp)
-  res = process(stamp)
+  res = process(stamp, version)
   res = res and (isRight(stamp + '.out', stamp + '.vl') and 3 or 2) or 1 
   if res == 1:
     with open(stamp + '.out', 'r') as fh:

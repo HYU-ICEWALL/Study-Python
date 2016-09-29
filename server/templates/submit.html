@@ -22,6 +22,11 @@
         <option>{{ problem.title }}</option>
       {% endfor %}
     </select>
+    <select name="version" class="form-control">
+      {% for version in versions %}
+        <option>{{ version }}</option>
+      {% endfor %}
+    </select>
     <div class="check-open checkbox">
       <label>
         <input name="opensource" value="open" type="checkbox"> Open source

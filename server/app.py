@@ -29,12 +29,14 @@ def _problem(problem_id):
   content = Markup(markdown.markdown(content))
   return render_template('problem.html', now="problem", id=problem_id, content=content)
 
+from utility import VERSIONS
 @app.route("/submit", methods=['GET', 'POST'])
 def _submit():
   if request.method == 'POST':
     file = request.files['file']
     user_name = request.form['name']
     problem = request.form['problem']
+    version = request.form['version']
     opensource = request.form.getlist('opensource') and True or False 
     if file and user_name.strip() and problem and allowed_file(file.filename):
       nowstamp = get_timestamp()
@@ -42,7 +44,7 @@ def _submit():
       file.save(os.path.join(app.config['UPLOAD_FOLDER'], nowstamp))
       file_size = os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'] + nowstamp))
       problem_id = int(get_problem_id(problem))
-      query_db('INSERT INTO submissions (user_name, file_name, problem_id, size, process, score, stamp, open) VALUES (\'%s\', \'%s\', %d, %d, %d, %d, \'%s\', %d)' % (user_name, file_name, problem_id, file_size, 0, 0, nowstamp, opensource and 1 or 0 ), (), True)
+      query_db('INSERT INTO submissions (user_name, file_name, problem_id, size, process, score, stamp, open, version) VALUES (\'%s\', \'%s\', %d, %d, %d, %d, \'%s\', %d, \'%s\')' % (user_name, file_name, problem_id, file_size, 0, 0, nowstamp, opensource and 1 or 0, version ), (), True)
       push_submission(get_submission(nowstamp))
       return redirect(url_for('_results'))
     else:
@@ -50,7 +52,7 @@ def _submit():
         flash('input name must')
       else:
         flash('file upload error')
-  return render_template('submit.html', now="submit", problems=get_problems(['title']))
+  return render_template('submit.html', now="submit", versions=VERSIONS, problems=get_problems(['title']))
 
 RESULT_PER_PAGE = 15
 @app.route("/results")
@@ -74,7 +76,7 @@ def _result(result_id):
   return redirect(url_for('_results'))
     
 # for results
-SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp', 'open', 'result']
+SUBMISSION_COLUMN = ['id', 'user_name', 'file_name', 'problem_id', 'size', 'process', 'score', 'stamp', 'open', 'result', 'version']
 SUBMISSION_COLOR = ['warning', 'danger', 'danger', 'success']
 SUBMISSION_MARK = ['...', 'E', 'X', 'O']
 def get_results(n=0, name=None):
@@ -103,7 +105,6 @@ def pre_result(result_dic):
   if result_dic['result'] == "None": result_dic['result'] = "Wrong Answer"
   result_dic['name_search'] = '/results?name=' + str(result_dic['user_name'])
   return result_dic
-
 
 def get_result_content(id):
   stamp = query_db('SELECT stamp FROM submissions WHERE id=%d' % (id), (), False, True)[0]
@@ -166,7 +167,7 @@ class validate(Thread):
   def run(self):
     while True:
       submission = self.submit.get()
-      (ret, res)  = scoring(get_path(PATH['UPL'] + [submission['stamp']]), submission['problem_id'])
+      (ret, res)  = scoring(get_path(PATH['UPL'] + [submission['stamp']]), submission['problem_id'], submission['version'])
       self.submit.task_done()
       self.result.put({'id': submission['id'], 'process': ret, 'result': res})
 

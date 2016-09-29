@@ -166,8 +166,7 @@ class validate(Thread):
   def run(self):
     while True:
       submission = self.submit.get()
-      validation = get_path(PATH['INS'] + [str(submission['problem_id'])])
-      (ret, res)  = scoring(get_path(PATH['UPL'] + [submission['stamp']]), validation)
+      (ret, res)  = scoring(get_path(PATH['UPL'] + [submission['stamp']]), submission['problem_id'])
       self.submit.task_done()
       self.result.put({'id': submission['id'], 'process': ret, 'result': res})
 

@@ -10,6 +10,7 @@ $(function () {
   <tr class="active">
     <td>#</td>
     <td>Problem</td>
+    <td>code</td>
     <td>Name</td>
     <td>Size</td>
     <td>Result</td>
@@ -18,6 +19,7 @@ $(function () {
     <tr class={{ result.result_class }}>
       <td>{{ result.id }}</td>
       <td>{{ result.problem_name }}</td>
+      <td>{{ result.version }}</td>
       <td><a href={{ url_for('_results', name=result.user_name) }}>
         {{ result.user_name }}
       </a></td>

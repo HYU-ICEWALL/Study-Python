@@ -10,5 +10,6 @@ create table submissions (
   score integer default 0,
   stamp string not null,
   open integer default 0,
-  result string
+  result string,
+  version string default 'PY3'
 );

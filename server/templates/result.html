@@ -17,7 +17,12 @@
     </tr>
   </table>
   {% if result.open %}
-    <textarea class="form-control" rows="30">{{ result.content }}</textarea>
+    <pre id="code-text">{{ result.content }}</pre>
+    <script type="text/javascript" src="http://api.colorscripter.com/code/colorscripter.js"></script>
+    <script type="text/javascript">
+      var cs = new ColorScripter('python');
+      $('#code-text').html( cs.color($('#code-text').text()) );
+    </script>
   {% endif %}
   {% if result.process == "E" or result.process == "X" %}
     <div class="err">

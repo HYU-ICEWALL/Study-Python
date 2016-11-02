@@ -32,16 +32,28 @@ def aftertreatment(filename):
 
 from filecmp import cmp
 def isRight(obj, tar):
-  return cmp(obj, tar)
+  ret = cmp(obj, tar)
+  print(ret)
+  return ret
 
 COMPILER = {'PY3': 'python3', 'PY2': 'python'}
 VERSIONS = ['PY3', 'PY2']
-from subprocess import Popen, STDOUT
+import codecs
+from subprocess import Popen, STDOUT, PIPE
 def process(stamp, version):
   command = [COMPILER[version], stamp + '.py']
-  proc = Popen(command, shell=True, stdin=open(stamp + '.in'), stdout=open(stamp + '.out' ,'w'), stderr=STDOUT)
-  proc.communicate()[0]
-  return proc.returncode == 0
+  with Popen(command, shell=True, stdin=open(stamp + '.in'), stdout=PIPE, stderr=PIPE) as p:
+    ret, out = p.communicate()
+  lines = len(out) and out.splitlines() or ret.splitlines()
+  outfile = codecs.open(stamp + '.out', 'w', 'utf-8')
+  for line in lines:
+    if version=='PY3':
+      outfile.write(line.decode('cp949'))
+    else:
+      outfile.write(line.decode('utf-8'))
+    outfile.write('\r\n')
+  outfile.close()
+  return len(out) == 0
 
 def scoring(program, pid, version='PY3', debug=False):
   stamp = pretreatment(program)
@@ -56,6 +68,10 @@ def scoring(program, pid, version='PY3', debug=False):
   if not debug:
     aftertreatment(stamp)
   return (res, res == 1 and ret or "None")
+
+def debug(program, pid, version):
+  return scoring(get_path(PATH['UPL'] + [program]), pid, version, True)
+
 
 from random import randrange
 import datetime

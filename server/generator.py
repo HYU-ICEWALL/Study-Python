@@ -78,12 +78,60 @@ def webtooncrawler(fin, fou):
 	fin.close()
 	fou.close()
 
+alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz"
+def gen_str(i):
+    return "".join([alpha[randrange(0, len(alpha))] for _ in range(i)])
+def gen_key(s, e, count):
+    ret = set()
+    while (len(ret) < count):
+        ret.add(randrange(s, e))
+    return ret
+def insert(ks, s, p):
+    for k in ks:
+        s = s[k:] + p + s[:k]
+    return s
+def find_all(string, sub):
+    start = 0
+    while True:
+        start = string.find(sub, start)
+        if start == -1: return
+        yield start
+        start += len(sub)
+def stringparser(fin, fou):
+	n = randrange(45, 50)
+	write(fin, str(n))
+	for _ in range(n):
+		word = gen_str(randrange(10, 20))
+		text = gen_str(randrange(500, 750))
+
+		text = insert(gen_key(1, len(text) - 1, randrange(200, 250)), text, ' ')
+		text = insert(gen_key(0, len(text), randrange(10, 200)), text, ' ' + word + ' ')
+
+		write(fin, word)
+		write(fin, text)
+
+		keys = sorted(list(find_all(text, ' ' + word + ' ')) + list(find_all(text, ' ' + word)) + list(find_all(text, word+' ')))
+		
+		if (text[:len(word)] != word):
+			write(fou, '--'.join(text[:keys[0]].split()))
+		else:
+			write(fou, '')
+
+		if (text[-len(word):] != word):
+			write(fou, '--'.join(text[keys[-1] + len(word) + 1:].split()))
+		else:
+			write(fou, '')
+
+	fin.close()
+	fou.close()
+
 problems = [
 	primenumber,
 	primedistinction,
 	thenumberoffruits,
-	webtooncrawler
+	webtooncrawler,
+	stringparser
 ]
 
 def generate(pid, stamp):
-	problems[pid](open(stamp + '.in', 'w'), open(stamp + '.vl', 'w'))
+	problems[pid](open(stamp + '.in', 'w'), open(stamp + '.vl', 'w', encoding = 'utf8'))

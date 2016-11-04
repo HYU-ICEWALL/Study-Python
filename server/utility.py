@@ -33,7 +33,6 @@ def aftertreatment(filename):
 from filecmp import cmp
 def isRight(obj, tar):
   ret = cmp(obj, tar)
-  print(ret)
   return ret
 
 COMPILER = {'PY3': 'python3', 'PY2': 'python'}

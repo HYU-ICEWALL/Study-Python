@@ -125,12 +125,64 @@ def stringparser(fin, fou):
 	fin.close()
 	fou.close()
 
+def queue(fin, fou):
+	action = ['put', 'get']
+	n = randrange(8888, 9999)
+	q = []
+	qi = 0
+	write(fin, str(n))
+	for _ in range(n):
+		act = choice(action)
+		write(fin, act)
+		if act == 'put':
+			num = randrange(-10000, 10000)
+			write(fin, str(num))
+			q.append(num)
+		elif act == 'get':
+			if len(q) > qi:
+				write(fou, str(q[qi]))
+				qi+=1
+
+	write(fou, str(len(q) - qi))
+	fin.close()
+	fou.close()
+
+def stack(fin, fou):
+	action = ['put', 'get']
+	n = randrange(8888, 9999)
+	q = []
+	write(fin, str(n))
+	for _ in range(n):
+		act = choice(action)
+		write(fin, act)
+		if act == 'put':
+			num = randrange(-10000, 10000)
+			write(fin, str(num))
+			q.append(num)
+		elif act == 'get':
+			if len(q):
+				write(fou, str(q.pop()))
+
+	write(fou, str(len(q)))
+	fin.close()
+	fou.close()
+
+def prefix(fin, fou):
+	return 0
+
+def postfix(fin, fou):
+	return 0
+
 problems = [
 	primenumber,
 	primedistinction,
 	thenumberoffruits,
 	webtooncrawler,
-	stringparser
+	stringparser,
+	queue,
+	stack,
+	prefix,
+	postfix
 ]
 
 def generate(pid, stamp):
